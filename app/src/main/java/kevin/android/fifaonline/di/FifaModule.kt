@@ -31,16 +31,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiProvider {
 
-    @Singleton
-    @Provides
-    fun retrofitClient(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(getOkHttpClientWithoutAuthorization())
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())).build()
-    }
-
     @Provides
     fun getOkHttpClientWithoutAuthorization(): OkHttpClient {
         return OkHttpClient.Builder().apply {
@@ -62,7 +52,18 @@ object ApiProvider {
         }.build()
     }
 
-    @Singleton
+    @Provides
+    fun retrofitClient(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())).build()
+    }
+
+
+
+
     @Provides
     fun provideFifaApi(retrofit: Retrofit) : Api = retrofit.create(Api::class.java)
 

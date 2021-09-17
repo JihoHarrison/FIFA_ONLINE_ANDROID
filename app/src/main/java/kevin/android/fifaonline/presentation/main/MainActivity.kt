@@ -32,6 +32,8 @@ class MainActivity : AppCompatActivity() {
         bindLevelViewModel()
 
         binding.btnSearch.setOnClickListener {
+            // two way binding
+            // text watcher
             viewModel.getFifaInfo(binding.editNickName.text.toString())
         }
     }

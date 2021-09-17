@@ -1,5 +1,6 @@
 package kevin.android.fifaonline
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.Display
 import androidx.lifecycle.MutableLiveData
@@ -30,18 +31,8 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     val userNickName : Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
     //    fun fifaRepository(nickname: String) {
-//        repository.getModel(nickname).subscribeOn(Schedulers.io())
-//            .observeOnMain()
-//            .subscribe(
-//                {
-//                    it.nickname
-//                    it.level
-//                    it?.let { fifaProcessor.offer(it) }
-//                }, {
-//                    it.message
-//                }
-//            ).addToDisposables()
-//    }
+
+
     fun getFifaInfo(nickname : String) {
         repository.getModel(nickname).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
             {
@@ -49,7 +40,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             },{
                 Log.d("error", it.message.toString())
             }
-        )
+        ).addTo(disposables)
     }
 
 
