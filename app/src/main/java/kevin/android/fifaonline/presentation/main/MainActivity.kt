@@ -39,7 +39,6 @@ class MainActivity : FragmentActivity() {
         bindNameViewModel()
         bindLevelViewModel()
         bindEditText(txtNickName)
-        savedInstanceState?.putString("")
 
 
 
