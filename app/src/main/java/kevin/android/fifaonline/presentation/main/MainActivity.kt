@@ -4,21 +4,28 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
+import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxkotlin.addTo
 import kevin.android.fifaonline.*
 import kevin.android.fifaonline.databinding.ActivityMainBinding
+import kevin.android.fifaonline.presentation.detail.MatchDetailFragment
+import kevin.android.fifaonline.presentation.match.MatchFragment
 import kevin.android.fifaonline.repository.Repository
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : FragmentActivity() {
     private lateinit var binding: ActivityMainBinding
+    private var matchFragment = MatchFragment()
+    private var matchDetailFragment = MatchDetailFragment()
+    private lateinit var txtNickName : String
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -27,14 +34,35 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         binding.mainViewModel = viewModel
+        txtNickName = binding.editNickName.text.toString()
 
         bindNameViewModel()
         bindLevelViewModel()
+        bindEditText(txtNickName)
+        savedInstanceState?.putString("")
 
-        binding.btnSearch.setOnClickListener {
-            // two way binding
-            // text watcher
-            viewModel.getFifaInfo(binding.editNickName.text.toString())
+
+
+//        binding.btnSearch.setOnClickListener {
+//            // two way binding
+//            // text watcher
+//
+//        }
+    }
+
+    fun throwNickName(bundle: Bundle){
+        bundle.putString("nickName", txtNickName)
+    }
+
+    fun bindEditText(nickname : String){
+        binding.editNickName.setOnEditorActionListener { v, actionId, event ->
+            var handler = false
+            if(actionId == EditorInfo.IME_ACTION_DONE){
+                viewModel.getFifaInfo(nickname)
+
+                handler = true
+            }
+            handler
         }
     }
 

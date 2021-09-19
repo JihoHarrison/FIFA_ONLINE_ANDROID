@@ -40,11 +40,13 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             },{
                 Log.d("error", it.message.toString())
             }
-        ).addTo(disposables)
+        ).addToDisposables()
     }
 
 
-    fun Disposable.addToDisposables(): Disposable = addTo(disposables)
+
+
+    private fun Disposable.addToDisposables(): Disposable = addTo(disposables)
 
 
 }

@@ -10,4 +10,5 @@ class Repository @Inject constructor(private val api: Api) {
 
     fun getModel(nickname: String): Single<Model> = api.getUserInfo(nickname)
 
+
 }
