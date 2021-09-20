@@ -1,8 +1,11 @@
 package kevin.android.fifaonline.api
 
 import io.reactivex.Single
-import kevin.android.fifaonline.model.Model
+import kevin.android.fifaonline.model.MatchDTO
+import kevin.android.fifaonline.model.MatchIdDTO
+import kevin.android.fifaonline.model.UserModel
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Api {
@@ -11,6 +14,18 @@ interface Api {
     fun getUserInfo(
         @Query("nickname")
         nickname: String
-    ): Single<Model>
+    ): Single<UserModel>
 
+    @GET("matches/{matchid}")
+    fun getMatchInfo(
+        @Path("matchid") matchid: String
+    ): Single<MatchDTO>
+
+    @GET("users/{accessid}/matches")
+    fun getOfficialMatchId(
+        @Path("accessid") accessid : String,
+        @Query("matchtype") matchtype : Int,
+        @Query("offset") offset : Int,
+        @Query("limit") limit : Int,
+    ) : Single<List<String>>
 }

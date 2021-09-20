@@ -1,8 +1,7 @@
 package kevin.android.fifaonline.model
 
-data class Model(
+data class UserModel(
     val accessId: String,
     val nickname: String,
     val level: Int
-
 )

@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable name="mainViewModel" type="kevin.android.fifaonline.MainViewModel"/>
-        <variable name="model" type="kevin.android.fifaonline.model.Model"/>
+        <variable name="model" type="kevin.android.fifaonline.model.UserModel"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

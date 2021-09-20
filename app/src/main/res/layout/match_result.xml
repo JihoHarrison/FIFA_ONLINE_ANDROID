@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+    >
+
+        <TextView
+                android:id="@+id/txtPlayer1"
+                android:text="plyr01"
+                android:textSize="20sp"
+                android:paddingStart="20dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <TextView
+                android:id="@+id/txtPlayerResult1"
+                android:text="승"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:padding="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txtPlayer1"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <TextView
+                android:id="@+id/txtVs"
+                android:text="VS"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="15dp"
+                app:layout_constraintStart_toEndOf="@+id/txtPlayerResult1"
+                app:layout_constraintEnd_toStartOf="@+id/txtPlayer2"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingTop="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+                android:id="@+id/txtPlayer2"
+                android:text="plyr02"
+                android:textSize="20sp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:paddingStart="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txtVs"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <TextView
+                android:id="@+id/txtPlayerResult2"
+                android:text="패"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:padding="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txtPlayer2"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+        <!--      helelelslslsldldldldldldllddldldllddlssldlsldlsldls          -->
+        <TextView
+                android:id="@+id/txtPlayerScore1"
+                android:text="0"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:paddingStart="40dp"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txtPlayerResult2"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <TextView
+                android:id="@+id/txtColon"
+                android:text=":"
+                android:textSize="20sp"
+                android:padding="8dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txtPlayerScore1"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <TextView
+                android:id="@+id/txtPlayerScore2"
+                android:text="0"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txtColon"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+        <View
+                android:id="@+id/viewLine"
+                android:layout_width="0dp"
+                android:background="@color/black"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtPlayer2"
+        />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

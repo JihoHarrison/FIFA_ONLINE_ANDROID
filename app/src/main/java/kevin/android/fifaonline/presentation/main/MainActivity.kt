@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -25,7 +27,6 @@ class MainActivity : FragmentActivity() {
     private lateinit var binding: ActivityMainBinding
     private var matchFragment = MatchFragment()
     private var matchDetailFragment = MatchDetailFragment()
-    private lateinit var txtNickName : String
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -34,38 +35,34 @@ class MainActivity : FragmentActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
         binding.mainViewModel = viewModel
-        txtNickName = binding.editNickName.text.toString()
 
+        /** viewModel과 View 묶어주는 부분 **/
         bindNameViewModel()
         bindLevelViewModel()
-        bindEditText(txtNickName)
 
-
-
-//        binding.btnSearch.setOnClickListener {
-//            // two way binding
-//            // text watcher
-//
-//        }
-    }
-
-    fun throwNickName(bundle: Bundle){
-        bundle.putString("nickName", txtNickName)
-    }
-
-    fun bindEditText(nickname : String){
-        binding.editNickName.setOnEditorActionListener { v, actionId, event ->
+        /** 검색 버튼 클릭 대신 안드로이드 소프트 키보드의 완료 버튼을 통해서 검색 수행 **/
+        binding.editNickName.setOnEditorActionListener { _, actionId, _ ->
             var handler = false
-            if(actionId == EditorInfo.IME_ACTION_DONE){
-                viewModel.getFifaInfo(nickname)
-
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.getFifaInfo(binding.editNickName.text.toString())
                 handler = true
             }
             handler
         }
+
+        /** 여기는 그냥 검색 버튼을 이용해서 검색 수행하는 부분 **/
+        binding.btnSearch.setOnClickListener {
+            // two way binding
+            // text watcher
+            viewModel.getFifaInfo(binding.editNickName.text.toString())
+        }
     }
 
-    fun bindNameViewModel() {
+    fun bindEditText(nickname: String) {
+
+    }
+
+    private fun bindNameViewModel() {
         viewModel.userNickName.observeOnMain().subscribe({
             binding.txtNickName.text = it
         }, {
@@ -73,11 +70,14 @@ class MainActivity : FragmentActivity() {
         })
     }
 
-    fun bindLevelViewModel() {
+    private fun bindLevelViewModel() {
         viewModel.userLevel.observeOnMain().subscribe({
             binding.txtLevel.text = it
         }, {
             binding.txtLevel.text = "레벨을 가져올 수 없습니다."
         })
     }
+
+
+
 }
