@@ -1,31 +1,22 @@
 package kevin.android.fifaonline.presentation.main
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.util.Log
-import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxkotlin.addTo
 import kevin.android.fifaonline.*
 import kevin.android.fifaonline.databinding.ActivityMainBinding
 import kevin.android.fifaonline.presentation.detail.MatchDetailFragment
-import kevin.android.fifaonline.presentation.match.MatchFragment
-import kevin.android.fifaonline.repository.Repository
-import javax.inject.Inject
+import kevin.android.fifaonline.presentation.match.MatchActivity
 
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var matchFragment = MatchFragment()
     private var matchDetailFragment = MatchDetailFragment()
 
     private val viewModel: MainViewModel by viewModels()
@@ -44,6 +35,7 @@ class MainActivity : FragmentActivity() {
         binding.editNickName.setOnEditorActionListener { _, actionId, _ ->
             var handler = false
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                startActivity(Intent(this@MainActivity, MatchActivity::class.java))
                 viewModel.getFifaInfo(binding.editNickName.text.toString())
                 handler = true
             }
@@ -55,6 +47,7 @@ class MainActivity : FragmentActivity() {
             // two way binding
             // text watcher
             viewModel.getFifaInfo(binding.editNickName.text.toString())
+            startActivity(Intent(this, MatchActivity::class.java))
         }
     }
 
@@ -77,7 +70,6 @@ class MainActivity : FragmentActivity() {
             binding.txtLevel.text = "레벨을 가져올 수 없습니다."
         })
     }
-
 
 
 }

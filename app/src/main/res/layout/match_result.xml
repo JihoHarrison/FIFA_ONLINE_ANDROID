@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-
+        <variable name="matchModel" type="kevin.android.fifaonline.model.MatchDTO"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -11,7 +11,7 @@
 
         <TextView
                 android:id="@+id/txtPlayer1"
-                android:text="plyr01"
+                android:text="@{matchModel.matchInfo.get(0).nickname}"
                 android:textSize="20sp"
                 android:paddingStart="20dp"
                 android:paddingTop="15dp"
@@ -25,7 +25,7 @@
 
         <TextView
                 android:id="@+id/txtPlayerResult1"
-                android:text="승"
+                android:text="@{matchModel.matchInfo.get(0).matchDetail.matchResult}"
                 android:textStyle="bold"
                 android:textSize="25sp"
                 android:padding="12dp"
@@ -51,7 +51,7 @@
 
         <TextView
                 android:id="@+id/txtPlayer2"
-                android:text="plyr02"
+                android:text="@{matchModel.matchInfo.get(1).nickname}"
                 android:textSize="20sp"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
@@ -65,7 +65,7 @@
 
         <TextView
                 android:id="@+id/txtPlayerResult2"
-                android:text="패"
+                android:text="@{matchModel.matchInfo.get(1).matchDetail.matchResult}"
                 android:textStyle="bold"
                 android:textSize="25sp"
                 android:padding="12dp"
@@ -78,7 +78,7 @@
         <!--      helelelslslsldldldldldldllddldldllddlssldlsldlsldls          -->
         <TextView
                 android:id="@+id/txtPlayerScore1"
-                android:text="0"
+                android:text="@{Integer.toString(matchModel.matchInfo.get(0).shoot.goalTotal)}"
                 android:textSize="20sp"
                 android:padding="10dp"
                 android:paddingStart="40dp"
@@ -106,7 +106,7 @@
 
         <TextView
                 android:id="@+id/txtPlayerScore2"
-                android:text="0"
+                android:text="@{Integer.toString(matchModel.matchInfo.get(1).shoot.goalTotal)}"
                 android:textSize="20sp"
                 android:padding="10dp"
                 android:textColor="@color/black"

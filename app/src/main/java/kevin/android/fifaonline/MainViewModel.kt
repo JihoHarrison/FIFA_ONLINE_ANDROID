@@ -1,5 +1,7 @@
 package kevin.android.fifaonline
+
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Flowable
@@ -22,17 +24,25 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
 
     private val disposables by lazy { CompositeDisposable() }
 
+    private var _matchLists = MutableLiveData<ArrayList<MatchDTO>>()
+    val matchList = _matchLists
+
     private val fifaProcessor: BehaviorProcessor<UserModel> =
         BehaviorProcessor.create()
     private val matchIdProcessor: BehaviorProcessor<List<String>> =
         BehaviorProcessor.create()
-    private val matchInfoProcessor: BehaviorProcessor<MatchDTO> =
+    private val matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
         BehaviorProcessor.create()
-    val matchInfo = matchInfoProcessor
+    val matchInfo: Flowable<List<MatchDTO>> = matchInfoProcessor.map { it }
 
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
-    val userAccessId: Flowable<String> = fifaProcessor.map { it.accessId }
+//    val user01: Flowable<String> = matchInfoProcessor.map { it.matchInfo[0].nickname }
+//    val user02: Flowable<String> = matchInfoProcessor.map { it.matchInfo[1].nickname }
+//    val user01Score: Flowable<Int> = matchInfoProcessor.map { it.matchInfo[0].shoot.goalTotal }
+//    val user02Score: Flowable<Int> = matchInfoProcessor.map { it.matchInfo[1].shoot.goalTotal }
+//    val user01Result: Flowable<String> = matchInfoProcessor.map { it.matchInfo[0].matchDetail.matchResult }
+//    val user02Result: Flowable<String> = matchInfoProcessor.map { it.matchInfo[1].matchDetail.matchResult }
 
     fun getFifaInfo(nickname: String) {
         repository.getModel(nickname).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
@@ -61,7 +71,8 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     fun getOfficialMatchInfo(matchId: String) {
         repository.getMatchInfoRepo(matchId).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
             {
-                matchInfoProcessor.offer(it)
+
+
                 Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
             }, {
                 Log.d("error", it.message.toString())

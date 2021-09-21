@@ -4,6 +4,7 @@ import io.reactivex.Single
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.MatchIdDTO
 import kevin.android.fifaonline.model.UserModel
+import kevin.android.fifaonline.model.response.BaseResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
