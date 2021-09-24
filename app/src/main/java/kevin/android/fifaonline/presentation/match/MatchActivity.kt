@@ -11,7 +11,7 @@ import kevin.android.fifaonline.R
 import kevin.android.fifaonline.adapter.MatchResultAdapter
 import kevin.android.fifaonline.databinding.ActivityMainBinding
 import kevin.android.fifaonline.databinding.ActivityMatchBinding
-import kevin.android.fifaonline.model.MatchDTO
+import kevin.android.fifaonline.model.*
 import kevin.android.fifaonline.observeOnMain
 
 @AndroidEntryPoint
@@ -19,25 +19,32 @@ class MatchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMatchBinding
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var adapter: MatchResultAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_match)
-        Log.d("error", viewModel.matchList.toString() + "sdasdkfjaslkdfjq")
-        Log.d("error", viewModel.matchInfo.toString() + "sdasdkfjaslkdfjq")
 
-        viewModel.matchInfo.observeOnMain()
-            .subscribe(
-                {
-                    Log.d("error", viewModel.matchList.toString() + "sdasdkfjaslkdfjq")
+        var shootDetail : List<ShootDetailDTO> = listOf(ShootDetailDTO(1,1,1))
 
-                    binding.rcMatchList.adapter = MatchResultAdapter(it)
+        var matchInfos : List<MatchInfoDTO> = listOf(MatchInfoDTO("qewr", "jiho", MatchDetailDTO(2021,
+            "패",0,0,0,0,0,0,0,0,0,0,0.1
+"hello"), ShootDTO(1,1,1,1,1,1,1,1,1,1,1,1)
+        , shootDetail, DefenceDTO()
+        ))
 
-                },{
-                    Log.d("error", "오류입니다")
-                }
-            )
+        var lists : List<MatchDTO> = listOf(MatchDTO("asd", "12:29", 50, MatchInfoDTO()))
+
+
+        adapter = MatchResultAdapter()
+
+        binding.rcMatchList.adapter =
+
+
+
+
+
     }
 
 

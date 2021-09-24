@@ -2,6 +2,7 @@ package kevin.android.fifaonline.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kevin.android.fifaonline.*
+import kevin.android.fifaonline.adapter.MatchResultAdapter
 import kevin.android.fifaonline.databinding.ActivityMainBinding
 import kevin.android.fifaonline.presentation.detail.MatchDetailFragment
 import kevin.android.fifaonline.presentation.match.MatchActivity

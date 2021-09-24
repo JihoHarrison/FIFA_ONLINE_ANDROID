@@ -23,9 +23,10 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val disposables by lazy { CompositeDisposable() }
+    var array = emptyArray<MatchDTO>()
 
-    private var _matchLists = MutableLiveData<ArrayList<MatchDTO>>()
-    val matchList = _matchLists
+//    private var _matchLists = List<MatchDTO>()
+//    val matchList = _matchLists
 
     private val fifaProcessor: BehaviorProcessor<UserModel> =
         BehaviorProcessor.create()
@@ -34,6 +35,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     private val matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
         BehaviorProcessor.create()
     val matchInfo: Flowable<List<MatchDTO>> = matchInfoProcessor.map { it }
+
 
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
@@ -61,6 +63,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
                 matchIdProcessor.offer(it)
                 for (element in it) {
                     getOfficialMatchInfo(element)
+
                 }
             }, {
                 Log.d("error", it.message.toString())
@@ -69,11 +72,13 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     }
 
     fun getOfficialMatchInfo(matchId: String) {
+
         repository.getMatchInfoRepo(matchId).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
             {
 
-
+                array += it
                 Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
+                Log.d("error", it.matchInfo[0].matchDetail.matchResult + " " + it.matchInfo[1].matchDetail.matchResult)
             }, {
                 Log.d("error", it.message.toString())
             }
