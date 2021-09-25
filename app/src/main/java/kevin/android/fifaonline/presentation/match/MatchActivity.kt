@@ -39,7 +39,7 @@ class MatchActivity : AppCompatActivity() {
 
         adapter = MatchResultAdapter()
 
-        binding.rcMatchList.adapter =
+        binding.rcMatchList.adapter = adapter
 
 
 
