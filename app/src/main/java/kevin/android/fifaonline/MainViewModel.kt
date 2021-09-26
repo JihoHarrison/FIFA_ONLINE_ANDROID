@@ -10,6 +10,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.processors.PublishProcessor
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -23,7 +24,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val disposables by lazy { CompositeDisposable() }
-    var array = emptyArray<MatchDTO>()
 
 //    private var _matchLists = List<MatchDTO>()
 //    val matchList = _matchLists
@@ -32,9 +32,9 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         BehaviorProcessor.create()
     private val matchIdProcessor: BehaviorProcessor<List<String>> =
         BehaviorProcessor.create()
-    private val matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
-        BehaviorProcessor.create()
-    val matchInfo: Flowable<List<MatchDTO>> = matchInfoProcessor.map { it }
+    private val matchInfoProcessor: PublishProcessor<List<MatchDTO>> =
+        PublishProcessor.create()
+    val matchInfo = matchInfoProcessor.map { it.toList() }
 
 
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
@@ -75,8 +75,9 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
 
         repository.getMatchInfoRepo(matchId).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
             {
+                Single.just(it)
+                matchInfoProcessor.offer(listOf(it))
 
-                array += it
                 Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
                 Log.d("error", it.matchInfo[0].matchDetail.matchResult + " " + it.matchInfo[1].matchDetail.matchResult)
             }, {

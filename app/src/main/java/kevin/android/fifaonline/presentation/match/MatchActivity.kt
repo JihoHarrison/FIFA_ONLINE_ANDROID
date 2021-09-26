@@ -14,6 +14,7 @@ import kevin.android.fifaonline.databinding.ActivityMainBinding
 import kevin.android.fifaonline.databinding.ActivityMatchBinding
 import kevin.android.fifaonline.model.*
 import kevin.android.fifaonline.observeOnMain
+import kevin.android.fifaonline.subscribeWithErrorLogger
 
 @AndroidEntryPoint
 class MatchActivity : AppCompatActivity() {
@@ -63,11 +64,25 @@ class MatchActivity : AppCompatActivity() {
         var matchs: List<MatchDTO> = listOf(MatchDTO("he", "he", 1, matchInfos),
             MatchDTO("he", "he", 1, matchInfos)
             )
+        //Log.d("hey", viewModel.getOfficialMatchInfo("60e46576eba5bd4548925819").toString())
+        //Log.d("hey", viewModel.getOfficialMatchInfo("60be3e8681e90119c911f687").toString())
+        //Log.d("hey", viewModel.getFifaInfo("꼬솜슈터").toString())
+
+        viewModel.matchInfo
+
+        viewModel.matchInfo.observeOnMain().subscribe(
+            {
+                Log.d("hey", it.get(0).toString())
+                adapter = MatchResultAdapter(it)
+                binding.rcMatchList.adapter =  adapter
+            },{
+                Log.d("hey", it.message.toString())
+            }
+
+        )
 
 
-        adapter = MatchResultAdapter(matchs)
 
-        binding.rcMatchList.adapter = adapter
 
 
     }
