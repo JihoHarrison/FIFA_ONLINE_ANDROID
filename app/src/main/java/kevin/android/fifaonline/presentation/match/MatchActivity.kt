@@ -2,6 +2,7 @@ package kevin.android.fifaonline.presentation.match
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.service.autofill.FieldClassification
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
@@ -26,27 +27,50 @@ class MatchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_match)
 
-        var shootDetail : List<ShootDetailDTO> = listOf(ShootDetailDTO(1,1,1))
+        var shootDetail: List<ShootDetailDTO> = listOf(ShootDetailDTO(1, 1, 1))
+        var player: List<PlayerDTO> = listOf(PlayerDTO(1, 1, 1))
 
-        var matchInfos : List<MatchInfoDTO> = listOf(MatchInfoDTO("qewr", "jiho", MatchDetailDTO(2021,
-            "패",0,0,0,0,0,0,0,0,0,0,0.1
-"hello"), ShootDTO(1,1,1,1,1,1,1,1,1,1,1,1)
-        , shootDetail, DefenceDTO()
-        ))
+        var matchInfos: List<MatchInfoDTO> = listOf(
+            MatchInfoDTO(
+                "qewr",
+                "jiho",
+                MatchDetailDTO(
+                    2021,
+                    "패", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1,
+                    "hello"
+                ),
+                ShootDTO(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+                shootDetail,
+                PassDTO(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+                DefenceDTO(1, 1, 2, 1),
+                player
+            ),MatchInfoDTO(
+                "qewr",
+                "jiho",
+                MatchDetailDTO(
+                    2021,
+                    "패", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1,
+                    "hello"
+                ),
+                ShootDTO(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+                shootDetail,
+                PassDTO(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+                DefenceDTO(1, 1, 2, 1),
+                player
+            )
+        )
 
-        var lists : List<MatchDTO> = listOf(MatchDTO("asd", "12:29", 50, MatchInfoDTO()))
+        var matchs: List<MatchDTO> = listOf(MatchDTO("he", "he", 1, matchInfos),
+            MatchDTO("he", "he", 1, matchInfos)
+            )
 
 
-        adapter = MatchResultAdapter()
+        adapter = MatchResultAdapter(matchs)
 
         binding.rcMatchList.adapter = adapter
 
 
-
-
-
     }
-
 
 
 }
