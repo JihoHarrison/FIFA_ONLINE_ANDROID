@@ -1,5 +1,6 @@
 package kevin.android.fifaonline.api
 
+import io.reactivex.Observable
 import io.reactivex.Single
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.MatchIdDTO
@@ -20,7 +21,7 @@ interface Api {
     @GET("matches/{matchid}")
     fun getMatchInfo(
         @Path("matchid") matchid: String
-    ): Single<MatchDTO>
+    ): Observable<MatchDTO>
 
     @GET("users/{accessid}/matches")
     fun getOfficialMatchId(
