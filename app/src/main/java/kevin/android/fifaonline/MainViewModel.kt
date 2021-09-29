@@ -92,9 +92,11 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             .map { it.toList() }
             .subscribe ({
                 Log.d("helloworld", it.toString())
-
                 matchLists.postValue((matchLists.value?: emptyList())+it)
+                //Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
+                //Log.d("error", it.matchInfo[0].matchDetail.matchResult + " " + it.matchInfo[1].matchDetail.matchResult)
 
+                //Log.d("error", it.message.toString())
             },{
 
             }
