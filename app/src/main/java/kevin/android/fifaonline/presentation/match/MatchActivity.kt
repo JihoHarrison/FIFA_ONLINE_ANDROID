@@ -10,6 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import kevin.android.fifaonline.MainViewModel
 import kevin.android.fifaonline.R
 import kevin.android.fifaonline.adapter.MatchResultAdapter

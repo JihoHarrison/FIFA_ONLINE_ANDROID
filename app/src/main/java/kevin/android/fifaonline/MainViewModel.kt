@@ -20,8 +20,7 @@ import io.reactivex.rxkotlin.toObservable
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.BehaviorSubject.create
-import io.reactivex.subjects.BehaviorSubject.createDefault
+import io.reactivex.subjects.BehaviorSubject.*
 import io.reactivex.subjects.ReplaySubject
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.MatchIdDTO
@@ -91,17 +90,14 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     fun getOfficialMatchInfo(matchId: String) {
 
         repository.getMatchInfoRepo(matchId)
-            .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                Log.d("helloworld", it.toString())
-//                matchInfoProcessor.onNext()
-//                matchLists.postValue(it)
-
-                //matchLists.postValue((matchLists.value ?: emptyList()) + it)
-
-            }, {
+            .toObservable()
+            .subscribe (
+                {
+                    Single.just(it)
+                    matchLists.postValue(listOf(it))
+                },{
 
             }
             ).addToDisposables()
