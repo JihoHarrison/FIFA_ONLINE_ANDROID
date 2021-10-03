@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.internal.schedulers.IoScheduler
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kevin.android.fifaonline.MainViewModel
@@ -74,6 +75,20 @@ class MatchActivity : AppCompatActivity() {
         //Log.d("hey", viewModel.getOfficialMatchInfo("60e46576eba5bd4548925819").toString())
         //Log.d("hey", viewModel.getOfficialMatchInfo("60be3e8681e90119c911f687").toString())
         Log.d("hey", viewModel.getFifaInfo("호날두").toString())
+
+//        viewModel.matchListsProcess.subscribeOn(Schedulers.io())
+//            .flatMap {  }
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(
+//                {
+//
+//                },{
+//
+//                }
+//            )
+
+//        viewModel.matchListsProcess.observeOn(AndroidSchedulers.mainThread())
+//            .
 
         viewModel.matchLists.observe(this, Observer {
             adapter = MatchResultAdapter(it)

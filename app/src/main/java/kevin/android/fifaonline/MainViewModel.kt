@@ -42,10 +42,10 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         BehaviorProcessor.create()
 
     //val matchIdList = MutableLiveData<List<String>>()
-    private val matchInfoProcessor: BehaviorSubject<List<MatchDTO>> =
-        createDefault(emptyList())
+    private val matchInfoProcessor: BehaviorProcessor<MatchDTO> =
+        BehaviorProcessor.create()
 
-    var matchListsProcess: Observable<List<MatchDTO>> = matchInfoProcessor.map { it.sortedBy { it.matchDate } }
+    var matchListsProcess: Flowable<MatchDTO> = matchInfoProcessor
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
 //    val matchInfoProcess: Single<List<MatchDTO>> = matchInfoProcessor
@@ -96,7 +96,10 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             .subscribe (
                 {
                     Single.just(it)
+                    Log.d("FIFA", it.toString())
+                    matchInfoProcessor.offer(it)
                     matchLists.postValue(listOf(it))
+                    matchLists.postValue(matchLists.value?.plus(it))
                 },{
 
             }
