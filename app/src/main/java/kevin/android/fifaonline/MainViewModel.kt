@@ -73,9 +73,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
                 matchIdProcessor.offer(it)
                 for (element in it) {
                     getOfficialMatchInfo(element)
-                    //Log.d("helloworld", getOfficialMatchInfo(element).toString())
                 }
-                //Log.d("hellofriend",getOfficialMatchInfo(it[0]).toString())
             }, {
                 Log.d("error", it.message.toString())
             }
@@ -90,14 +88,14 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .map { it.toList() }
-            .subscribe ({
+            .subscribe({
                 Log.d("helloworld", it.toString())
-                matchLists.postValue((matchLists.value?: emptyList())+it)
+                matchLists.postValue((matchLists.value ?: emptyList()) + it)
                 //Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
                 //Log.d("error", it.matchInfo[0].matchDetail.matchResult + " " + it.matchInfo[1].matchDetail.matchResult)
 
                 //Log.d("error", it.message.toString())
-            },{
+            }, {
 
             }
             ).addToDisposables()
