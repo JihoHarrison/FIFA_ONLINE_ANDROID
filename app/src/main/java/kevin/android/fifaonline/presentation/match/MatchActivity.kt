@@ -90,10 +90,10 @@ class MatchActivity : AppCompatActivity() {
 //        viewModel.matchListsProcess.observeOn(AndroidSchedulers.mainThread())
 //            .
 
-        viewModel.matchLists.observe(this, Observer {
-            adapter = MatchResultAdapter(it)
-            binding.rcMatchList.adapter = adapter
-        })
+//        viewModel.matchLists.observe(this, Observer {
+//            adapter = MatchResultAdapter(it)
+//            binding.rcMatchList.adapter = adapter
+//        })
 
 
     }

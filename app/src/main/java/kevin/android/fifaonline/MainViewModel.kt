@@ -33,8 +33,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val disposables by lazy { CompositeDisposable() }
+    var matchLists: List<MatchDTO> = listOf()
 
-    var matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData<List<MatchDTO>>()
+    //var matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData<List<MatchDTO>>()
 
     private val fifaProcessor: BehaviorProcessor<UserModel> =
         BehaviorProcessor.create()
@@ -42,10 +43,10 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         BehaviorProcessor.create()
 
     //val matchIdList = MutableLiveData<List<String>>()
-    private val matchInfoProcessor: BehaviorProcessor<MatchDTO> =
+    private val matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
         BehaviorProcessor.create()
 
-    var matchListsProcess: Flowable<MatchDTO> = matchInfoProcessor
+    var matchListsProcess: Flowable<List<MatchDTO>> = matchInfoProcessor
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
 //    val matchInfoProcess: Single<List<MatchDTO>> = matchInfoProcessor
@@ -95,11 +96,13 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             .toObservable()
             .subscribe (
                 {
-                    Single.just(it)
-                    Log.d("FIFA", it.toString())
-                    matchInfoProcessor.offer(it)
-                    matchLists.postValue(listOf(it))
-                    matchLists.postValue(matchLists.value?.plus(it))
+                    Log.d("FIFAHELLO", it.toString())
+                    matchLists += it
+                    Log.d("FIFAHELLO", matchLists.toString())
+                    //matchInfoProcessor.offer(it)
+//                    matchLists.postValue(listOf(it))
+//                    matchLists.postValue(matchLists.value?.plus(it))
+
                 },{
 
             }
