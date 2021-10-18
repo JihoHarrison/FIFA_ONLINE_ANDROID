@@ -36,7 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: CoroutineRepository) : ViewModel() {
 
-    val matchLists = MutableLiveData<ArrayList<MatchDTO>>().apply { value = arrayListOf() }
+    val matchLists = MutableLiveData<ArrayList<MatchDTO>>()
     val userModel = MutableLiveData<UserModel>()
     private lateinit var matchIdLists: List<String>
 
@@ -45,6 +45,7 @@ class MainViewModel @Inject constructor(private val repository: CoroutineReposit
             viewModelScope.launch(Dispatchers.IO) {
                 repository.getModel(nickName).apply {
                     userModel.postValue(this)
+                    getMatchId(this.accessId)
                 }
                 withContext(Dispatchers.Main) {
                     userModel.value = userModel.value
@@ -60,10 +61,27 @@ class MainViewModel @Inject constructor(private val repository: CoroutineReposit
         try {
             viewModelScope.launch(Dispatchers.IO) {
                 repository.getOfficialMatchIdRepo(accessId).apply {
-
+                    for (element in this) {
+                        getMatchInfo(element)
+                    }
                 }
             }
-        } catch (e: Throwable){
+        } catch (e: Throwable) {
+            Log.e("ERROR_VIEWMODEL", "!!!!!ERROR ERROR ERROR ERROR!!!!!")
+
+        }
+    }
+
+    fun getMatchInfo(matchId: String) {
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.getMatchInfoRepo(matchId).apply {
+                    matchLists.value?.add(this)
+                    Log.d("ERROR_VIEWMODEL", this.toString())
+                }
+            }
+
+        } catch (e: Throwable) {
             Log.e("ERROR_VIEWMODEL", "!!!!!ERROR ERROR ERROR ERROR!!!!!")
 
         }

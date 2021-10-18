@@ -72,30 +72,13 @@ class MatchActivity : AppCompatActivity() {
             MatchDTO("he", "he", 1, matchInfos),
         )
 
+        viewModel.getUserModel("꼬솜슈터")
+        viewModel.matchLists.observe(this, Observer {
+            adapter = MatchResultAdapter(it)
+            binding.rcMatchList.adapter = adapter
+        })
 
 
-        //Log.d("hey", viewModel.getOfficialMatchInfo("60e46576eba5bd4548925819").toString())
-        //Log.d("hey", viewModel.getOfficialMatchInfo("60be3e8681e90119c911f687").toString())
-//        Log.d("hey", viewModel.getFifaInfo("꼬솜슈터").toString())
-
-//        viewModel.matchListsProcess.subscribeOn(Schedulers.io())
-//            .flatMap {  }
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(
-//                {
-//
-//                },{
-//
-//                }
-//            )
-
-//        viewModel.matchListsProcess.observeOn(AndroidSchedulers.mainThread())
-//            .
-
-//        viewModel.matchLists.observe(this, Observer {
-//            adapter = MatchResultAdapter(it)
-//            binding.rcMatchList.adapter = adapter
-//        })
 
 
     }
