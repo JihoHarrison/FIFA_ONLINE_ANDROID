@@ -8,6 +8,7 @@ import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import kevin.android.fifaonline.BuildConfig
 import kevin.android.fifaonline.api.Api
+import kevin.android.fifaonline.api.CoroutineApi
 import kevin.android.fifaonline.api.MyInterceptor
 import kevin.android.fifaonline.util.Constants.Companion.BASE_URL
 import okhttp3.Interceptor
@@ -17,7 +18,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 /**
@@ -26,6 +29,14 @@ import javax.inject.Singleton
  * Date: 2021/09/16
  * Time: 12:26 오후
  */
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class RxOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class CoroutineOkHttpClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -53,6 +64,7 @@ object ApiProvider {
     }
 
     @Provides
+    @RxOkHttpClient
     fun retrofitClient(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -61,11 +73,22 @@ object ApiProvider {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io())).build()
     }
 
-
+    @Provides
+    @CoroutineOkHttpClient
+    fun coroutineRetrofitClient(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
 
     @Provides
-    fun provideFifaApi(retrofit: Retrofit) : Api = retrofit.create(Api::class.java)
+    fun provideFifaApi(@RxOkHttpClient retrofit: Retrofit): Api = retrofit.create(Api::class.java)
+
+    @Provides
+    fun provideCoroutineFifaApi(@CoroutineOkHttpClient retrofit: Retrofit): CoroutineApi = retrofit.create(CoroutineApi::class.java)
 
 
 }

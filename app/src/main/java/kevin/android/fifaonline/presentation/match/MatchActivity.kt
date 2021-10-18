@@ -72,9 +72,11 @@ class MatchActivity : AppCompatActivity() {
             MatchDTO("he", "he", 1, matchInfos),
         )
 
+
+
         //Log.d("hey", viewModel.getOfficialMatchInfo("60e46576eba5bd4548925819").toString())
         //Log.d("hey", viewModel.getOfficialMatchInfo("60be3e8681e90119c911f687").toString())
-        Log.d("hey", viewModel.getFifaInfo("호날두").toString())
+//        Log.d("hey", viewModel.getFifaInfo("꼬솜슈터").toString())
 
 //        viewModel.matchListsProcess.subscribeOn(Schedulers.io())
 //            .flatMap {  }

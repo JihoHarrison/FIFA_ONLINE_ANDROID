@@ -1,9 +1,9 @@
 package kevin.android.fifaonline
 
 import android.service.autofill.FieldClassification
+import android.service.autofill.Transformation
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -25,90 +25,49 @@ import io.reactivex.subjects.ReplaySubject
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.MatchIdDTO
 import kevin.android.fifaonline.model.UserModel
+import kevin.android.fifaonline.repository.CoroutineRepository
 import kevin.android.fifaonline.repository.Repository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Flow
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class MainViewModel @Inject constructor(private val repository: CoroutineRepository) : ViewModel() {
 
-    private val disposables by lazy { CompositeDisposable() }
-    var matchLists: List<MatchDTO> = listOf()
+    val matchLists = MutableLiveData<ArrayList<MatchDTO>>().apply { value = arrayListOf() }
+    val userModel = MutableLiveData<UserModel>()
+    private lateinit var matchIdLists: List<String>
 
-    //var matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData<List<MatchDTO>>()
-
-    private val fifaProcessor: BehaviorProcessor<UserModel> =
-        BehaviorProcessor.create()
-    private val matchIdProcessor: BehaviorProcessor<List<String>> =
-        BehaviorProcessor.create()
-
-    //val matchIdList = MutableLiveData<List<String>>()
-    private val matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
-        BehaviorProcessor.create()
-
-    var matchListsProcess: Flowable<List<MatchDTO>> = matchInfoProcessor
-    val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
-    val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
-//    val matchInfoProcess: Single<List<MatchDTO>> = matchInfoProcessor
-//    val user01: Flowable<String> = matchInfoProcessor.map { it.matchInfo[0].nickname }
-//    val user02: Flowable<String> = matchInfoProcessor.map { it.matchInfo[1].nickname }
-//    val user01Score: Flowable<Int> = matchInfoProcessor.map { it.matchInfo[0].shoot.goalTotal }
-//    val user02Score: Flowable<Int> = matchInfoProcessor.map { it.matchInfo[1].shoot.goalTotal }
-//    val user01Result: Flowable<String> = matchInfoProcessor.map { it.matchInfo[0].matchDetail.matchResult }
-//    val user02Result: Flowable<String> = matchInfoProcessor.map { it.matchInfo[1].matchDetail.matchResult }
-
-    fun getFifaInfo(nickname: String) {
-        repository.getModel(nickname)
-            .subscribeOn(Schedulers.io())
-            .observeOnMain()
-            .subscribe(
-                {
-                    fifaProcessor.offer(it)
-                    getOfficialMatchId(it.accessId)
-                }, {
-                    Log.d("error", it.message.toString())
+    fun getUserModel(nickName: String) {
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.getModel(nickName).apply {
+                    userModel.postValue(this)
                 }
-            ).addToDisposables()
-    }
-
-    fun getOfficialMatchId(accessId: String) {
-        repository.getOfficialMatchIdRepo(accessId)
-            .subscribeOn(Schedulers.io())
-            .observeOnMain()
-            .subscribe(
-                {
-                    matchIdProcessor.offer(it)
-                    for (element in it) {
-                        getOfficialMatchInfo(element)
-                    }
-                }, {
-                    Log.d("error", it.message.toString())
+                withContext(Dispatchers.Main) {
+                    userModel.value = userModel.value
                 }
-            ).addToDisposables()
-    }
-
-
-    fun getOfficialMatchInfo(matchId: String) {
-
-        repository.getMatchInfoRepo(matchId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .toObservable()
-            .subscribe (
-                {
-                    Log.d("FIFAHELLO", it.toString())
-                    matchLists += it
-                    Log.d("FIFAHELLO", matchLists.toString())
-                    //matchInfoProcessor.offer(it)
-//                    matchLists.postValue(listOf(it))
-//                    matchLists.postValue(matchLists.value?.plus(it))
-
-                },{
-
             }
-            ).addToDisposables()
 
+        } catch (e: Throwable) {
+            Log.e("ERROR_VIEWMODEL", "!!!!!ERROR ERROR ERROR ERROR!!!!!")
+        }
     }
 
-    private fun Disposable.addToDisposables(): Disposable = addTo(disposables)
+    fun getMatchId(accessId: String) {
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.getOfficialMatchIdRepo(accessId).apply {
+
+                }
+            }
+        } catch (e: Throwable){
+            Log.e("ERROR_VIEWMODEL", "!!!!!ERROR ERROR ERROR ERROR!!!!!")
+
+        }
+    }
+
+
 }

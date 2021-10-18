@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import kevin.android.fifaonline.*
 import kevin.android.fifaonline.adapter.MatchResultAdapter
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             var handler = false
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 startActivity(Intent(this@MainActivity, MatchActivity::class.java))
-                viewModel.getFifaInfo(binding.editNickName.text.toString())
+                viewModel.getUserModel(binding.editNickName.text.toString())
                 handler = true
             }
             handler
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnSearch.setOnClickListener {
             // two way binding
             // text watcher
-            viewModel.getFifaInfo(binding.editNickName.text.toString())
+            viewModel.getUserModel(binding.editNickName.text.toString())
             startActivity(Intent(this, MatchActivity::class.java))
         }
     }
@@ -58,18 +59,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindNameViewModel() {
-        viewModel.userNickName.observeOnMain().subscribe({
-            binding.txtNickName.text = it
-        }, {
-            binding.txtNickName.text = "이름을 가져올 수 없습니다."
+        viewModel.userModel.observe(this, Observer {
+            binding.txtLevel.text = it.nickname
         })
     }
 
     private fun bindLevelViewModel() {
-        viewModel.userLevel.observeOnMain().subscribe({
-            binding.txtLevel.text = it
-        }, {
-            binding.txtLevel.text = "레벨을 가져올 수 없습니다."
+        viewModel.userModel.observe(this, Observer {
+            binding.txtNickName.text = it.level.toString()
         })
     }
 
