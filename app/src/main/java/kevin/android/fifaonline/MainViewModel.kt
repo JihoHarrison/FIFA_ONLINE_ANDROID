@@ -37,6 +37,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: CoroutineRepository) : ViewModel() {
 
     //val matchLists = MutableLiveData<ArrayList<MatchDTO>>()
+    val intentNickName = MutableLiveData<String>()
     val matchLists = MutableLiveData<List<MatchDTO>>()
     val emptyList : MutableLiveData<List<MatchDTO>> = Transformations.map(matchLists) {
         it.sortedBy { it.matchDate }
