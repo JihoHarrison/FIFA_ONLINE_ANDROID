@@ -1,13 +1,12 @@
 package kevin.android.fifaonline.presentation.match
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kevin.android.fifaonline.MainViewModel
@@ -70,42 +69,22 @@ class MatchActivity : AppCompatActivity() {
             MatchDTO("he", "he", 1, matchInfos),
         )
 
-        //Log.d("hey", viewModel.getOfficialMatchInfo("60e46576eba5bd4548925819").toString())
-        //Log.d("hey", viewModel.getOfficialMatchInfo("60be3e8681e90119c911f687").toString())
-        Log.d("hey", viewModel.getFifaInfo("호날두").toString())
+        Log.d("hey", viewModel.getFifaInfo("꼬솜슈터").toString())
 
-//        viewModel.matchListsProcess.observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                Log.d("helloworld", it[0].toString())
-//                adapter = MatchResultAdapter(it)
-//                binding.rcMatchList.adapter = adapter
-//            },{
-//
-//            })
+
         viewModel.matchLists.observe(this, Observer {
             adapter = MatchResultAdapter(it)
             binding.rcMatchList.adapter = adapter
         })
 
-//        viewModel.matchListsProcess.observeOnMain()
-//            .subscribe({
+//        viewModel.matchListsProcess.firstOrError()
+//            .observeOnMain()
+//            .subscribeWithErrorLogger {
+//                //viewModel.orderMatchLists(it)
 //                adapter = MatchResultAdapter(it)
 //                binding.rcMatchList.adapter = adapter
-//                       },{
-//
-//            })
+//            }
 
-//        adapter = MatchResultAdapter(matchs)
-//        binding.rcMatchList.adapter =  adapter
-        //Log.d("test", viewModel.getOfficialMatchInfo("61163b421af40e3e7c0a7f37").toString())
-        //Log.d("test", viewModel.getOfficialMatchInfo("61163b421af40e3e7c0a7f37").toString())
-        //Log.d("test", viewModel.getOfficialMatchInfo("60d43cc1c74b881cdf5c39f8").toString())
-//        viewModel.matchLists.observe(this, Observer
-//        {
-//            adapter = MatchResultAdapter(matchs)
-//            binding.rcMatchList.adapter = adapter
-//        }
-//        )
     }
 
 }
