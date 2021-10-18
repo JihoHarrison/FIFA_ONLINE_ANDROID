@@ -73,7 +73,7 @@ class MatchActivity : AppCompatActivity() {
         )
 
         viewModel.getUserModel("꼬솜슈터")
-        viewModel.matchLists.observe(this, Observer {
+        viewModel.emptyList.observe(this, Observer {
             adapter = MatchResultAdapter(it)
             binding.rcMatchList.adapter = adapter
         })

@@ -36,7 +36,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: CoroutineRepository) : ViewModel() {
 
-    val matchLists = MutableLiveData<ArrayList<MatchDTO>>()
+    //val matchLists = MutableLiveData<ArrayList<MatchDTO>>()
+    val matchLists = MutableLiveData<List<MatchDTO>>()
+    val emptyList : MutableLiveData<List<MatchDTO>> = Transformations.map(matchLists) {
+        it.sortedBy { it.matchDate }
+    } as MutableLiveData<List<MatchDTO>>
     val userModel = MutableLiveData<UserModel>()
     private lateinit var matchIdLists: List<String>
 
@@ -76,7 +80,8 @@ class MainViewModel @Inject constructor(private val repository: CoroutineReposit
         try {
             viewModelScope.launch(Dispatchers.IO) {
                 repository.getMatchInfoRepo(matchId).apply {
-                    matchLists.value?.add(this)
+                    //matchLists.value?.add(this)
+                    matchLists.postValue((matchLists.value ?: emptyList()) + this)
                     Log.d("ERROR_VIEWMODEL", this.toString())
                 }
             }
