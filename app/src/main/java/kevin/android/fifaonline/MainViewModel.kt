@@ -14,36 +14,24 @@ import io.reactivex.schedulers.Schedulers
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.UserModel
 import kevin.android.fifaonline.repository.Repository
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val disposables by lazy { CompositeDisposable() }
-
     var matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData<List<MatchDTO>>()
-    private lateinit var lists: MutableList<MatchDTO>
-    private lateinit var matchIdLists: List<String>
 
     private val fifaProcessor: BehaviorProcessor<UserModel> =
         BehaviorProcessor.create()
     private val matchIdProcessor: BehaviorProcessor<List<String>> =
         BehaviorProcessor.create()
+    private val loadingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.createDefault(true)
+    val isLoading = loadingProcessor
 
-
-    private var matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
-        BehaviorProcessor.create()
-
-    var matchListsProcess: Flowable<List<MatchDTO>> = matchInfoProcessor
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
-//    val matchInfoProcess: Single<List<MatchDTO>> = matchInfoProcessor
-//    val user01: Flowable<String> = matchInfoProcessor.map { it.matchInfo[0].nickname }
-//    val user02: Flowable<String> = matchInfoProcessor.map { it.matchInfo[1].nickname }
-//    val user01Score: Flowable<Int> = matchInfoProcessor.map { it.matchInfo[0].shoot.goalTotal }
-//    val user02Score: Flowable<Int> = matchInfoProcessor.map { it.matchInfo[1].shoot.goalTotal }
-//    val user01Result: Flowable<String> = matchInfoProcessor.map { it.matchInfo[0].matchDetail.matchResult }
-//    val user02Result: Flowable<String> = matchInfoProcessor.map { it.matchInfo[1].matchDetail.matchResult }
 
     fun getFifaInfo(nickname: String) {
         repository.getModel(nickname).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
@@ -57,43 +45,35 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     }
 
     fun getOfficialMatchId(accessId: String) {
-        repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
-            {
-                matchIdProcessor.offer(it)
-                for (element in it) {
-                    Log.d("matchIds", element)
-                    getOfficialMatchInfo(element)
+        repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain()
+            .subscribe(
+                {
+                    matchIdProcessor.offer(it)
+                    it.forEach { element ->
+                        getOfficialMatchInfo(element)
+                    }
+                }, {
+                    Log.d("error", it.message.toString())
                 }
-            }, {
-                Log.d("error", it.message.toString())
-            }
-        ).addToDisposables()
+            ).addToDisposables()
     }
 
     fun getOfficialMatchInfo(matchId: String) {
 
         repository.getMatchInfoRepo(matchId)
-            .toObservable()
-            .toSortedList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { it.toList() }
+            .doOnSubscribe { loadingProcessor.offer(true) }
+            .doOnComplete { loadingProcessor.offer(false) }
             .subscribe({
-//                matchInfoProcessor.offer(it)
-                //lists.add(it)
-                //Log.d("matchIds", lists.toString())
-                Log.d("helloworld", it.toString())
-                //matchLists.value = it
-                matchLists.postValue((matchLists.value ?: emptyList()) + it)
-                //Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
-                //Log.d("error", it.matchInfo[0].matchDetail.matchResult + " " + it.matchInfo[1].matchDetail.matchResult)
 
-                //Log.d("error", it.message.toString())
+                matchLists.setValue((matchLists.value?.sortedByDescending { it.matchDate }
+                    ?: emptyList()) + it)
+                matchLists.value?.sortedByDescending { it.matchDate }
             }, {
 
             }
             ).addToDisposables()
-
     }
 
     private fun Disposable.addToDisposables(): Disposable = addTo(disposables)

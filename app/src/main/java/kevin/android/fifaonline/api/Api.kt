@@ -21,7 +21,7 @@ interface Api {
     @GET("matches/{matchid}")
     fun getMatchInfo(
         @Path("matchid") matchid: String
-    ): Single<MatchDTO>
+    ): Observable<MatchDTO>
 
     @GET("users/{accessid}/matches")
     fun getOfficialMatchId(
