@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,13 +29,15 @@ class MatchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_match)
 
-        Log.d("hey", viewModel.getFifaInfo("꼬솜슈터").toString())
-
+        viewModel.getFifaInfo("꼬솜슈터")
+        viewModel.isLoading.observeOnMain()
+            .subscribeWithErrorLogger {
+                binding.loadingBar.isVisible = it
+            }
+            .addTo(CompositeDisposable())
         viewModel.matchLists.observe(this, Observer {
 
-            adapter = MatchResultAdapter(it)
-
-            it.sortedByDescending { it.matchDate }
+            adapter = MatchResultAdapter(it.sortedByDescending { it.matchDate })
             binding.rcMatchList.adapter = adapter
         })
     }

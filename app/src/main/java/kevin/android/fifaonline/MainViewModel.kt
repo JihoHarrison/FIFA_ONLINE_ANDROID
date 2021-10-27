@@ -1,23 +1,20 @@
 package kevin.android.fifaonline
 
 import android.util.Log
-import android.view.SurfaceControl
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.UserModel
 import kevin.android.fifaonline.repository.Repository
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +27,8 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         BehaviorProcessor.create()
     private val matchIdProcessor: BehaviorProcessor<List<String>> =
         BehaviorProcessor.create()
+    private val loadingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.createDefault(true)
+    val isLoading = loadingProcessor
 
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
@@ -46,16 +45,17 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     }
 
     fun getOfficialMatchId(accessId: String) {
-        repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
-            {
-                matchIdProcessor.offer(it)
-                for(element in it){
-                    getOfficialMatchInfo(element)
+        repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain()
+            .subscribe(
+                {
+                    matchIdProcessor.offer(it)
+                    it.forEach { element ->
+                        getOfficialMatchInfo(element)
+                    }
+                }, {
+                    Log.d("error", it.message.toString())
                 }
-            }, {
-                Log.d("error", it.message.toString())
-            }
-        ).addToDisposables()
+            ).addToDisposables()
     }
 
     fun getOfficialMatchInfo(matchId: String) {
@@ -63,12 +63,18 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         repository.getMatchInfoRepo(matchId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { loadingProcessor.offer(true) }
+            .doOnComplete { loadingProcessor.offer(false) }
             .subscribe({
-                matchLists.setValue((matchLists.value?.sortedByDescending { it.matchDate } ?: emptyList()) + it)
+
+                matchLists.setValue((matchLists.value?.sortedByDescending { it.matchDate }
+                    ?: emptyList()) + it)
+                matchLists.value?.sortedByDescending { it.matchDate }
             }, {
 
             }
             ).addToDisposables()
     }
+
     private fun Disposable.addToDisposables(): Disposable = addTo(disposables)
 }
