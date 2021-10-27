@@ -70,7 +70,7 @@ class MatchActivity : AppCompatActivity() {
         )
 
         Log.d("hey", viewModel.getFifaInfo("꼬솜슈터").toString())
-
+        viewModel.getOfficialMatchInfo()
 
         viewModel.matchLists.observe(this, Observer {
             adapter = MatchResultAdapter(it)

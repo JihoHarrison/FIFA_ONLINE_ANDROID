@@ -1,16 +1,20 @@
 package kevin.android.fifaonline
 
 import android.util.Log
+import android.view.SurfaceControl
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.UserModel
 import kevin.android.fifaonline.repository.Repository
@@ -22,6 +26,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     private val disposables by lazy { CompositeDisposable() }
 
     var matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData<List<MatchDTO>>()
+    var matchArrayLists: MutableLiveData<ArrayList<MatchDTO>> = MutableLiveData<ArrayList<MatchDTO>>()
     private lateinit var lists: MutableList<MatchDTO>
     private lateinit var matchIdLists: List<String>
 
@@ -31,10 +36,10 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         BehaviorProcessor.create()
 
 
-    private var matchInfoProcessor: BehaviorProcessor<List<MatchDTO>> =
-        BehaviorProcessor.create()
+    private var matchInfoProcessor: PublishSubject<List<MatchDTO>> =
+        PublishSubject.create()
 
-    var matchListsProcess: Flowable<List<MatchDTO>> = matchInfoProcessor
+    var matchListsProcess: Observable<List<MatchDTO>> = matchInfoProcessor
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
 //    val matchInfoProcess: Single<List<MatchDTO>> = matchInfoProcessor
@@ -60,39 +65,37 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
             {
                 matchIdProcessor.offer(it)
-                for (element in it) {
-                    Log.d("matchIds", element)
-                    getOfficialMatchInfo(element)
-                }
+                matchIdLists = it
             }, {
                 Log.d("error", it.message.toString())
             }
         ).addToDisposables()
     }
 
-    fun getOfficialMatchInfo(matchId: String) {
+    fun getOfficialMatchInfo() {
 
-        repository.getMatchInfoRepo(matchId)
-            .toObservable()
-            .toSortedList()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { it.toList() }
-            .subscribe({
+        matchIdLists.forEach {
+            repository.getMatchInfoRepo(it)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
 //                matchInfoProcessor.offer(it)
-                //lists.add(it)
-                //Log.d("matchIds", lists.toString())
-                Log.d("helloworld", it.toString())
-                //matchLists.value = it
-                matchLists.postValue((matchLists.value ?: emptyList()) + it)
-                //Log.d("error", it.matchInfo[0].nickname + " " + it.matchInfo[1].nickname)
-                //Log.d("error", it.matchInfo[0].matchDetail.matchResult + " " + it.matchInfo[1].matchDetail.matchResult)
 
-                //Log.d("error", it.message.toString())
-            }, {
+                    //lists.add(it)
+                    //Log.d("matchIds", lists.toString())
+                    Log.d("helloworld", it.toString())
+                    //matchLists.value = it
+                    //matchIdLists = it
 
-            }
-            ).addToDisposables()
+                    //matchArrayLists.value?.add(it)
+                    //matchInfoProcessor.onNext(it)
+                    matchLists.postValue((matchLists.value ?: emptyList()) + it)
+
+                }, {
+
+                }
+                ).addToDisposables()
+        }
 
     }
 
