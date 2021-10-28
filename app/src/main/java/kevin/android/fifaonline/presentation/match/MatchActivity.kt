@@ -1,7 +1,7 @@
 package kevin.android.fifaonline.presentation.match
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -14,8 +14,8 @@ import kevin.android.fifaonline.MainViewModel
 import kevin.android.fifaonline.R
 import kevin.android.fifaonline.adapter.MatchResultAdapter
 import kevin.android.fifaonline.databinding.ActivityMatchBinding
-import kevin.android.fifaonline.model.*
 import kevin.android.fifaonline.observeOnMain
+import kevin.android.fifaonline.presentation.main.MainActivity.Companion.NICKNAME_EXTRA
 import kevin.android.fifaonline.subscribeWithErrorLogger
 
 @AndroidEntryPoint
@@ -29,17 +29,29 @@ class MatchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_match)
 
-        viewModel.getFifaInfo("꼬솜슈터")
+        val nickname: String? = intent.getStringExtra(NICKNAME_EXTRA)
+
+        if(nickname.isNullOrEmpty()) {
+            showToast("닉네임을 입력해주세요.")
+        }
+
+        viewModel.getFifaInfo(nickname.toString())
         viewModel.isLoading.observeOnMain()
             .subscribeWithErrorLogger {
                 binding.loadingBar.isVisible = it
             }
             .addTo(CompositeDisposable())
         viewModel.matchLists.observe(this, Observer {
-
             adapter = MatchResultAdapter(it.sortedByDescending { it.matchDate })
             binding.rcMatchList.adapter = adapter
         })
+        binding.imgBack.setOnClickListener {
+            finish()
+        }
+    }
+
+    fun MatchActivity.showToast(message: String) {
+        Toast.makeText(this@MatchActivity, message, Toast.LENGTH_SHORT).show();
     }
 
 }

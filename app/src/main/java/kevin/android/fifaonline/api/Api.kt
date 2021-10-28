@@ -6,6 +6,7 @@ import kevin.android.fifaonline.model.MatchDTO
 import kevin.android.fifaonline.model.MatchIdDTO
 import kevin.android.fifaonline.model.UserModel
 import kevin.android.fifaonline.model.response.BaseResponse
+import kevin.android.fifaonline.model.response.MaxDivisionDTO
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -30,4 +31,9 @@ interface Api {
         @Query("offset") offset : Int,
         @Query("limit") limit : Int,
     ) : Single<List<String>>
+
+    @GET("users/{accessid}/maxdivision")
+    fun getMaxDivision(
+        @Path("accessid") accessid: String
+    ): Single<List<MaxDivisionDTO>>
 }
