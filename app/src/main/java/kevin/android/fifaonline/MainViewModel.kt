@@ -1,5 +1,6 @@
 package kevin.android.fifaonline
 
+import android.service.autofill.FieldClassification
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,15 +13,20 @@ import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kevin.android.fifaonline.model.MatchDTO
+import kevin.android.fifaonline.model.MatchInfoDTO
 import kevin.android.fifaonline.model.UserModel
 import kevin.android.fifaonline.repository.Repository
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
 
     private val disposables by lazy { CompositeDisposable() }
-    var matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData<List<MatchDTO>>()
+
+    private val _matchLists: MutableLiveData<List<MatchDTO>> = MutableLiveData()
+    val matchLists: MutableLiveData<List<MatchDTO>> = _matchLists
 
     private val fifaProcessor: BehaviorProcessor<UserModel> =
         BehaviorProcessor.create()
@@ -31,58 +37,76 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     private val loadingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.createDefault(true)
     val isLoading = loadingProcessor
 
-    private val maxDivisionProcessor: BehaviorProcessor<String> = BehaviorProcessor.createDefault("검색 중 . . .")
+    private val maxDivisionProcessor: BehaviorProcessor<String> =
+        BehaviorProcessor.createDefault("검색 중 . . .")
     val userMaxDivision = maxDivisionProcessor
 
     private val setErrorMessageProcessor: BehaviorProcessor<String> =
         BehaviorProcessor.create()
-
 
     val setErrorMessage: Flowable<String> = setErrorMessageProcessor
     val userNickName: Flowable<String> = fifaProcessor.map { it.nickname }
     val userLevel: Flowable<String> = fifaProcessor.map { it.level.toString() }
 
     fun getFifaInfo(nickname: String) {
-        repository.getModel(nickname).subscribeOn(Schedulers.io()).observeOnMain().subscribe(
-            {
-                fifaProcessor.offer(it)
-                maxDivisionProcessor.offer(" ")
-                getOfficialMatchId(it.accessId)
-                getUserMaxDivision(it.accessId)
-            }, {
-                Log.d("error", it.message.toString())
+        repository.getModel(nickname)
+            .subscribeOn(Schedulers.io())
+            .observeOnMain()
+            .map { userModel ->
+                getOfficialMatchId(userModel.accessId)
+                userModel
             }
-        ).addToDisposables()
-    }
-
-    fun getOfficialMatchId(accessId: String) {
-        repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain()
+            .map { userModel ->
+                getUserMaxDivision(userModel.accessId)
+                userModel
+            }
             .subscribe(
-                {
-                    matchIdProcessor.offer(it)
-                    it.forEach { element ->
-                        getOfficialMatchInfo(element)
-                    }
+                { userModel ->
+                    fifaProcessor.offer(userModel)
+                    maxDivisionProcessor.offer(" ")
                 }, {
                     Log.d("error", it.message.toString())
                 }
             ).addToDisposables()
     }
 
-    fun getOfficialMatchInfo(matchId: String) {
-
-        repository.getMatchInfoRepo(matchId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingProcessor.offer(true) }
-            .doOnComplete { loadingProcessor.offer(false) }
-            .subscribe({
-                matchLists.setValue((matchLists.value ?: emptyList()) + it)
-            }, {
-                setErrorMessageProcessor.offer("매치 정보 조회 실패!")
+    fun getOfficialMatchId(accessId: String) {
+        repository.getOfficialMatchIdRepo(accessId).subscribeOn(Schedulers.io()).observeOnMain()
+            .map {
+                it.forEach { element ->
+                    getOfficialMatchInfo(element)
+                }
+                it
             }
+            .subscribe(
+                {
+                    matchIdProcessor.offer(it)
+                }, {
+                    Log.d("error", it.message.toString())
+                }
             ).addToDisposables()
     }
+
+        fun getOfficialMatchInfo(matchId: String) {
+            repository.getMatchInfoRepo(matchId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { loadingProcessor.offer(true) }
+                .doOnComplete { loadingProcessor.offer(false) }
+                .map {
+                    //if(it.matchInfo.size < 2) it.matchInfo = MatchInfoDTO(null, null, null, null,)
+                    val arrays: List<MatchDTO> = (_matchLists.value ?: emptyList()) + it
+                    return@map arrays
+                }
+                .subscribe({
+                    _matchLists.value = it
+                    Log.d("matchListTest", it.toString())
+                    //_matchLists.setValue(_matchLists)
+                }, {
+                    setErrorMessageProcessor.offer("매치 정보 조회 실패!")
+                }
+                ).addToDisposables()
+        }
 
     fun getUserMaxDivision(accessId: String) {
         repository.getUserMaxDivision(accessId).subscribeOn(Schedulers.io()).observeOnMain()

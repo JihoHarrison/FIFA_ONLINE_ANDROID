@@ -1,6 +1,5 @@
 package kevin.android.fifaonline.adapter
 
-import android.service.autofill.FieldClassification
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

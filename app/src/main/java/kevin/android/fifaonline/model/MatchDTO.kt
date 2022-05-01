@@ -10,11 +10,11 @@ data class MatchDTO(
     val matchId : String,
     val matchDate : String,
     val matchType: Int,
-    val matchInfo : List<MatchInfoDTO>
+    val matchInfo : List<MatchInfoDTO?>
 )
 data class MatchInfoDTO(
     val accessId : String,
-    val nickname : String,
+    var nickname : String,
     val matchDetail : MatchDetailDTO,
     val shoot : ShootDTO,
     val shootDetail : List<ShootDetailDTO>,

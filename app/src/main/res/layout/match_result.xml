@@ -131,7 +131,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginBottom="15dp"
-                android:text="@{matchModel.matchDate}"
+                android:text="@{matchModel.matchDate.toString()}"
                 android:textSize="11sp"
         />
 
