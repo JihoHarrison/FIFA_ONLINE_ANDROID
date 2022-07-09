@@ -8,7 +8,6 @@ import kevin.android.fifaonline.model.UserModel
 import kevin.android.fifaonline.model.response.MaxDivisionDTO
 import javax.inject.Inject
 
-
 class Repository @Inject constructor(private val api: Api) {
 
     fun getModel(nickname: String): Single<UserModel> = api.getUserInfo(nickname)
